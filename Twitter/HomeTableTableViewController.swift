@@ -10,7 +10,7 @@ import UIKit
 
 class HomeTableTableViewController: UITableViewController {
     var tweetArray = [NSDictionary]()
-    var numberOfTweet: Int!
+    var numberOfTweet: Int = 0
     
     let myRefreshControl = UIRefreshControl()
     
@@ -23,7 +23,7 @@ class HomeTableTableViewController: UITableViewController {
     }
     
     @objc func loadTweets(){
-        numberOfTweet = 10
+        numberOfTweet = 20
         let myUrl = "https://api.twitter.com/1.1/statuses/home_timeline.json"
         let myParams = ["count": numberOfTweet]
         TwitterAPICaller.client?.getDictionariesRequest(url: myUrl, parameters: myParams as [String : Any], success: { (tweets: [NSDictionary]) in
