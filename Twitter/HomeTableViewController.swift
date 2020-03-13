@@ -8,7 +8,7 @@
 
 import UIKit
 
-class HomeTableTableViewController: UITableViewController {
+class HomeTableViewController: UITableViewController {
     var tweetArray = [NSDictionary]()
     var numberOfTweet: Int = 0
     
@@ -20,6 +20,13 @@ class HomeTableTableViewController: UITableViewController {
         
         myRefreshControl.addTarget(self, action: #selector(loadTweets), for: .valueChanged)
         tableView.refreshControl = myRefreshControl
+        self.tableView.rowHeight = UITableView.automaticDimension
+        self.tableView.estimatedRowHeight = 150
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.loadTweets()
     }
     
     @objc func loadTweets(){
@@ -42,7 +49,7 @@ class HomeTableTableViewController: UITableViewController {
     
     func loadMoreTweets(){
         let myUrl = "https://api.twitter.com/1.1/statuses/home_timeline.json"
-        numberOfTweet = numberOfTweet + 20
+        numberOfTweet = numberOfTweet + 10
         let myParams = ["count": numberOfTweet]
         TwitterAPICaller.client?.getDictionariesRequest(url: myUrl, parameters: myParams as [String : Any], success: { (tweets: [NSDictionary]) in
             //Clean tweets
@@ -76,6 +83,9 @@ class HomeTableTableViewController: UITableViewController {
         cell.userNameLabel.text = user["name"] as? String
         cell.tweetContent.text = tweetArray[indexPath.row]["text"] as? String
         
+        let date = tweetArray[indexPath.row]["created_at"] as? String
+        cell.tweetDate.text = getDate(dateString: date!)!.timeAgoSinceDate()
+        
         let imageUrl = URL(string: (user["profile_image_url_https"] as! String))
         let data = try? Data(contentsOf: imageUrl!)
         
@@ -83,6 +93,9 @@ class HomeTableTableViewController: UITableViewController {
             cell.profileImageView.image = UIImage(data: imageData)
         }
         
+        cell.setFavorite(tweetArray[indexPath.row]["favorited"] as! Bool)
+        cell.setRetweet(tweetArray[indexPath.row]["retweeted"] as! Bool)
+        cell.tweetId = tweetArray[indexPath.row]["id"] as! Int
         return cell
     }
     // MARK: - Table view data source
@@ -97,5 +110,57 @@ class HomeTableTableViewController: UITableViewController {
         return tweetArray.count
     }
     
+    func getDate(dateString: String) -> Date? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "E MMM d HH:mm:ss Z yyyy"
+        dateFormatter.timeZone = TimeZone.current
+        dateFormatter.locale = Locale.current
+        return dateFormatter.date(from: dateString) // replace Date String
+    }
    
+}
+
+extension Date {
+
+    func timeAgoSinceDate() -> String {
+
+        // From Time
+        let fromDate = self
+
+        // To Time
+        let toDate = Date()
+
+        // Estimation
+        // Year
+        if let interval = Calendar.current.dateComponents([.year], from: fromDate, to: toDate).year, interval > 0  {
+
+            return interval == 1 ? "\(interval)" + " " + "y ago" : "\(interval)" + " " + "y ago"
+        }
+
+        // Month
+        if let interval = Calendar.current.dateComponents([.month], from: fromDate, to: toDate).month, interval > 0  {
+
+            return interval == 1 ? "\(interval)" + " " + "m ago" : "\(interval)" + " " + "m ago"
+        }
+
+        // Day
+        if let interval = Calendar.current.dateComponents([.day], from: fromDate, to: toDate).day, interval > 0  {
+
+            return interval == 1 ? "\(interval)" + " " + "d ago" : "\(interval)" + " " + "d ago"
+        }
+
+        // Hours
+        if let interval = Calendar.current.dateComponents([.hour], from: fromDate, to: toDate).hour, interval > 0 {
+
+            return interval == 1 ? "\(interval)" + " " + "h ago" : "\(interval)" + " " + "h ago"
+        }
+
+        // Minute
+        if let interval = Calendar.current.dateComponents([.minute], from: fromDate, to: toDate).minute, interval > 0 {
+
+            return interval == 1 ? "\(interval)" + " " + "min ago" : "\(interval)" + " " + "min ago"
+        }
+
+        return "a moment ago"
+    }
 }
