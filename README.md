@@ -2,12 +2,11 @@
 
 This is a basic twitter app to read your tweets.
 
-Time spent: **10** hours spent in total
 # Twitter - Part II
 
 This is a basic twitter app to view, compose, favorite, and retweet tweets.
 
-Time spent: **X** hours spent in total
+Time spent: **5** hours spent in total
 
 ## User Stories
 
@@ -30,6 +29,8 @@ Here's a walkthrough of implemented user stories:
 <img src='http://g.recordit.co/yDv3aN09W6.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 ## Twitter Part I
+
+Time spent: **4** hours spent in total
 
 ### User Stories
 
